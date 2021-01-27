@@ -1,0 +1,61 @@
+#!/bin/sh
+VAULT=/srv/backup
+CONFIG=/etc/dirvish/master.conf
+yesterday=$(date -d "yesterday" +%Y%m%d)
+CWD=$(pwd)
+
+cd "$VAULT"
+
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+YELLOW="\033[1;33m"
+NC="\033[0m"
+
+for machine in $(ls -d * | grep -v lost+found); do
+  	cd "$machine"
+	last_run=$(ls -d * | sort -r | head -n 2 | tail -n 1)
+
+	# get status message
+	if [ "$last_run" = "dirvish" ]; then
+		last_run="never   "
+		status="???????"
+	else
+		if [ -f "$last_run/summary" ]; then
+			status=$(grep -oP "Status: \K\w+" "$last_run/summary")
+		fi
+
+		if [ "$status" = "" ]; then
+			status="failure"
+		fi
+	fi
+
+	# set row color
+	if [ "$status" = "success" ]; then
+		COLOR=$GREEN
+	elif [ "$status" = "failure" ]; then
+		COLOR=$RED
+	else
+		COLOR=$YELLOW
+	fi
+
+	# print date in red if backup is old
+	if [ "$last_run" != "$yesterday" ]; then
+		last_run="$RED$last_run$COLOR"
+	fi
+
+	# get size of backup
+	du=$(cat dirvish/du 2>/dev/null | awk -F " " '{ printf "%-*s", 4, substr($1,1,4) }')
+	if [ -z "$du" ]; then
+		du="$RED??? $COLOR"
+	fi
+
+	note=$(grep "note:" dirvish/default.conf 2>/dev/null | cut -d: -f2)
+
+  	echo "$COLOR" $(echo "$machine ..........." | cut -c 1-11) "$status $last_run $du $note$NC"
+
+  	cd ..
+done
+
+df -h | grep /srv
+
+cd "$CWD"
