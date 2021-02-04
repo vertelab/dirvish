@@ -1,0 +1,12 @@
+#! /bin/sh
+VAULT=/srv/backup
+CONFIG=/etc/dirvish/master.conf
+
+cd $VAULT
+for machine in `ls|grep -v lost+found`
+do
+  cd $machine
+  du -sh . |cut -d' ' -f1 > dirvish/du 
+  cd ..
+
+done
