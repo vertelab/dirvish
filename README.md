@@ -1,6 +1,6 @@
 # dirvish
-## TODO here
-* create Makefile
+## TODO
+* create Makefile to automate
 
 ## Setup
 * put file dirvish-status in /usr/bin/dirvish-status 
