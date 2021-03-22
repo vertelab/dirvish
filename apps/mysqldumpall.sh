@@ -16,22 +16,22 @@ fi
 # Main params
 DUMPDIR='/var/backups'
 DUMPPREFIX='db_dump_'
-# DB's not dump. The _schema doesn't play well with lock-tables
+# DB's not dump. The _schema db's don't play well with lock-tables
 DBBLACKLIST="performance_schema,information_schema"
 
 ## Helpers ---------------------------------------------------------------------
 function in_blacklist(){
-	echo $DBBLACKLIST | grep $1
+	echo $DBBLACKLIST | grep -q $1
 	return $?
 }
 
-## (Optional,Placeholder) Deactivate services using DB on the server
+## (Optional,Placeholder) Deactivate services using DB on the server -----------
 
 ## Actual DB-dumping -----------------------------------------------------------
 echo "$(date): Starting database dump"
 for dbname in $(sudo mysql  -sNe 'show databases'); do
 	if in_blacklist $dbname; then
-		echo "Ignoring database $dbname"
+		echo "Ignoring database: $dbname"
 	else
 		dbdump=$DUMPDIR/$DUMPPREFIX$dbname.sql
 		echo "Dumping database: $dbname to location $dbdump"
@@ -40,8 +40,8 @@ for dbname in $(sudo mysql  -sNe 'show databases'); do
 done
 echo "Dump finished"
 
-## (Optional,Placeholder) Reactivate services using DB server
+## (Optional,Placeholder) Reactivate services using DB server ------------------
 
-## End
+## End -------------------------------------------------------------------------
 exit 0 # 0 = success
 
