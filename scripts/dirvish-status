@@ -14,6 +14,7 @@ NC="\033[0m"
 for machine in $(ls -d * | grep -v lost+found); do
   	cd "$machine"
 	last_run=$(ls -d * | sort -r | head -n 2 | tail -n 1)
+	status=""
 
 	# get status message
 	if [ "$last_run" = "dirvish" ]; then
