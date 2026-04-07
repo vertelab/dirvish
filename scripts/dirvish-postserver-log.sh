@@ -20,7 +20,6 @@ start=$(sed -n 's/Backup-begin: //p' /srv/backup/$VAULT/$IMAGE/summary)
 end=$(sed -n 's/Backup-complete: //p' /srv/backup/$VAULT/$IMAGE/summary)
 status=$(sed -n 's/Status: *\(.*\) */\1/p' /srv/backup/$VAULT/$IMAGE/summary | sed 's/ *$//')
 
-
 # Beräkna minuter
 duration_sec=$(( $(date -d "$end" +%s) - $(date -d "$start" +%s) ))
 duration_min=$(( duration_sec / 60 ))
